@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
     public int targetNumber = 2048;
+    public GameObject MainPanel;
+    public GameObject GameOverPanel;
 
     [HideInInspector]
     public bool isGameOver;
@@ -26,6 +29,7 @@ public class GameManager : MonoBehaviour
         TryGenerateNewTile();
         TryGenerateNewTile();
         this.isGameOver = false;
+        this.GameOverPanel.SetActive(false);
     }
 
     public void NewGame()
@@ -54,6 +58,10 @@ public class GameManager : MonoBehaviour
         if (!this.CanMove() || this.IsReachGoal())
         {
             this.isGameOver = true;
+            this.GameOverPanel.SetActive(true);
+            string gameOverText = (this.IsReachGoal() ? "Contratulations!" : "Game Over!") 
+                + string.Format("\nYou score\n{0}", ScoreManager.GetInstance().Score.ToString());
+            this.GameOverPanel.transform.Find("GameOverText").GetComponent<Text>().text = gameOverText;
         }
         else
         {
