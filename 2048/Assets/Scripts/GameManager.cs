@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
@@ -13,25 +14,8 @@ public class GameManager : MonoBehaviour
     private const int MatrixSize = 4;
     private readonly Tile[,] allTile = new Tile[MatrixSize, MatrixSize];
     private readonly List<Tile> emptyTiles = new List<Tile>();
-    private int currentScore;
-    private Text scoreText;
-    private Text highScoreText;
-    private Text resultText;
-
-    void Awake()
-    {
-        this.scoreText = GameObject.Find("ScoreNumber").GetComponent<Text>();
-        this.highScoreText = GameObject.Find("HighScoreNumber").GetComponent<Text>();
-        this.resultText = GameObject.Find("GameResultText").GetComponent<Text>();
-    }
-
 
     void Start()
-    {
-        this.NewGame();
-    }
-
-    public void NewGame()
     {
         foreach (Tile tile in GameObject.FindObjectsOfType<Tile>())
         {
@@ -42,10 +26,11 @@ public class GameManager : MonoBehaviour
         TryGenerateNewTile();
         TryGenerateNewTile();
         this.isGameOver = false;
-        this.scoreText.text = "0";
-        this.highScoreText.text = this.LoadHighScore(); // read from local store
-        this.currentScore = 0;
-        this.resultText.text = "";
+    }
+
+    public void NewGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void Move(MoveDirection moveDirection)
@@ -69,30 +54,12 @@ public class GameManager : MonoBehaviour
         if (!this.CanMove() || this.IsReachGoal())
         {
             this.isGameOver = true;
-            this.SaveHighScore();
-            this.resultText.text = this.IsReachGoal() ? "Congratulatons!" : "Ooops, you lose!";
         }
         else
         {
             TryGenerateNewTile();
             TryGenerateNewTile();
         }
-    }
-
-    private void SaveHighScore()
-    {
-
-    }
-
-    private string LoadHighScore()
-    {
-        return "3084";
-    }
-
-    private void AddScore(int score)
-    {
-        this.currentScore += score;
-        this.scoreText.text = this.currentScore.ToString();
     }
 
     private void TryGenerateNewTile()
@@ -107,14 +74,7 @@ public class GameManager : MonoBehaviour
 
     private bool IsReachGoal()
     {
-        foreach (var tile in this.allTile)
-        {
-            if (tile.Number == targetNumber)
-            {
-                return true;
-            }
-        }
-        return false;
+        return this.allTile.Cast<Tile>().Any(tile => tile.Number == this.targetNumber);
     }
 
     private bool CanMove()
@@ -177,6 +137,7 @@ public class GameManager : MonoBehaviour
 
             if (nextNotZeroPos.IsValidPosition())
             {
+                // Get current tile and next not zero tile
                 Tile curTile, nextTile;
                 if (moveDirection == MoveDirection.Up || moveDirection == MoveDirection.Down)
                 {
@@ -189,8 +150,9 @@ public class GameManager : MonoBehaviour
                     nextTile = this.allTile[startPosition.RowIndex, nextNotZeroPos.ColIndex];
                 }
 
+                // Update current tile and next not zero tile
                 if (curTile.Number == 0)
-                {
+                {// Move tile
                     curTile.Number = nextTile.Number;
                     nextTile.Number = 0;
                     i -= 1;
@@ -198,11 +160,11 @@ public class GameManager : MonoBehaviour
                     this.emptyTiles.Add(nextTile);
                 }
                 else if (curTile.Number == nextTile.Number)
-                {
+                {// Merge tile
+                    ScoreManager.GetInstance().Score += curTile.Number;   
                     curTile.Number *= 2;
                     nextTile.Number = 0;
                     this.emptyTiles.Add(nextTile);
-                    this.AddScore(curTile.Number);   
                 }
             }
         }

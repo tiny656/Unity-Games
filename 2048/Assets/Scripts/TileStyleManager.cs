@@ -12,6 +12,11 @@ public class TileStyleManager : MonoBehaviour {
         instance = this;
     }
 
+    private TileStyleManager()
+    {
+
+    }
+
     public static TileStyle GetTileStyle(int number)
     {
         TileStyle result = null;
