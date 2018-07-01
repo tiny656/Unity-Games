@@ -8,4 +8,3 @@ public class TileStyle
     public Color32 tileColor;
     public Color32 textColor;
 }
-

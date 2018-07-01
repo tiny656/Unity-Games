@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
 public class InputManager : MonoBehaviour
 {
     private GameManager gameManager;
@@ -15,6 +13,7 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
+        if (this.gameManager.isGameOver) return;
         KeyboardInput();
         TouchInput();
     }
@@ -41,6 +40,5 @@ public class InputManager : MonoBehaviour
 
     void TouchInput()
     {
-        // TODO
     }
 }
