@@ -2,6 +2,7 @@
 Some classical and interesting games for practice.
 
 ## 2048
+* [ ] public reference object just drag it
 * [ ] background music
 * [ ] high score store
 * [ ] animaiton
