@@ -1,6 +1,7 @@
 ﻿
 public enum MoveDirection
 {
+    Idle,
     Left,
     Right,
     Up,

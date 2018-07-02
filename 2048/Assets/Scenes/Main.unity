@@ -384,6 +384,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ada8bd14bb48ee349992af117e975902, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MinTouchMoveDis: 0
 --- !u!4 &110524400
 Transform:
   m_ObjectHideFlags: 0
@@ -5035,7 +5036,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 106.759476, y: 106.759476}
+  m_CellSize: {x: 93.62617, y: 93.62617}
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 0
   m_ConstraintCount: 2

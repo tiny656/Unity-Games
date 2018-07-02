@@ -6,7 +6,7 @@ Some classical and interesting games for practice.
 * [x] code refactoring
 * [x] high score store
 * [x] game over panel
-* [ ] touch input
+* [x] touch input
 * [ ] background music
 * [ ] animaiton
 * [ ] icon and platform(WebGL, Android) build, multiple browser support
