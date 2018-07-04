@@ -16,7 +16,7 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        if (this.gameManager.isGameOver) return;
+        if (this.gameManager.gameStatus != GameStatus.Playing) return;
         KeyboardInput();
         TouchInput();
     }

@@ -370,9 +370,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetNumber: 2048
+  Delay: 1.01
+  gameStatus: 0
   MainPanel: {fileID: 382392404}
   GameOverPanel: {fileID: 1218158881}
-  isGameOver: 0
 --- !u!114 &110524399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5036,7 +5037,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 93.62617, y: 93.62617}
+  m_CellSize: {x: 93.39135, y: 93.39135}
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 0
   m_ConstraintCount: 2
@@ -5062,8 +5063,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: e47ed29ab2415fb48a2a2869b2ce93b0, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

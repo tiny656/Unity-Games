@@ -8,6 +8,12 @@ public enum MoveDirection
     Down
 }
 
+public enum GameStatus
+{
+    Playing,
+    GameOver,
+    WaitingForMoveToEnd
+}
 public class Position
 {
     public int RowIndex;

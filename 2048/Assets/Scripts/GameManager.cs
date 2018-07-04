@@ -4,16 +4,19 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
     public int targetNumber = 2048;
+    [Range(0, 2f)]
+    public float Delay;
+    public GameStatus gameStatus;
     public GameObject MainPanel;
     public GameObject GameOverPanel;
 
-    [HideInInspector]
-    public bool isGameOver;
 
+    private bool[] lineMoveComplete = new bool[MatrixSize];
     private const int MatrixSize = 4;
     private readonly Tile[,] allTile = new Tile[MatrixSize, MatrixSize];
     private readonly List<Tile> emptyTiles = new List<Tile>();
@@ -28,7 +31,7 @@ public class GameManager : MonoBehaviour
         }
         TryGenerateNewTile();
         TryGenerateNewTile();
-        this.isGameOver = false;
+        this.gameStatus = GameStatus.Playing;
         this.GameOverPanel.SetActive(false);
     }
 
@@ -37,8 +40,11 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+
+
     public void Move(MoveDirection moveDirection)
     {
+        bool hasTileMoved = false;
         Position startPosition = new Position();
         for (int i = 0; i < MatrixSize; i++)
         {
@@ -52,23 +58,27 @@ public class GameManager : MonoBehaviour
                 startPosition.RowIndex = i;
                 startPosition.ColIndex = moveDirection == MoveDirection.Left ? 0 : MatrixSize - 1;
             }
-            this.UpdateTiles(startPosition, moveDirection);
+            hasTileMoved |= this.UpdateTiles(startPosition, moveDirection);
         }
+
+        if (hasTileMoved)
+        {
+            TryGenerateNewTile();
+            TryGenerateNewTile();
+        }
+
 
         if (!this.CanMove() || this.IsReachGoal())
         {
-            this.isGameOver = true;
+            this.gameStatus = GameStatus.GameOver;
             this.GameOverPanel.SetActive(true);
-            string gameOverText = (this.IsReachGoal() ? "Contratulations!" : "Game Over!") 
+            string gameOverText = (this.IsReachGoal() ? "Contratulations!" : "Game Over!")
                 + string.Format("\nYou score\n{0}", ScoreManager.GetInstance().Score.ToString());
             this.GameOverPanel.transform.Find("GameOverText").GetComponent<Text>().text = gameOverText;
         }
-        else
-        {
-            TryGenerateNewTile();
-            TryGenerateNewTile();
-        }
+
     }
+
 
     private void TryGenerateNewTile()
     {
@@ -137,8 +147,9 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private void UpdateTiles(Position startPosition, MoveDirection moveDirection)
+    private bool UpdateTiles(Position startPosition, MoveDirection moveDirection)
     {
+        bool result = false;
         for (int i = 0; i < MatrixSize; i += 1)
         {
             var nextNotZeroPos = this.FindNextNotZeroPosWithDirection(i, startPosition, moveDirection);
@@ -166,6 +177,7 @@ public class GameManager : MonoBehaviour
                     i -= 1;
                     this.emptyTiles.Remove(curTile);
                     this.emptyTiles.Add(nextTile);
+                    result = true;
                 }
                 else if (curTile.Number == nextTile.Number)
                 {// Merge tile
@@ -173,8 +185,10 @@ public class GameManager : MonoBehaviour
                     curTile.Number *= 2;
                     nextTile.Number = 0;
                     this.emptyTiles.Add(nextTile);
+                    result = true;
                 }
             }
         }
+        return result;
     }
 }
