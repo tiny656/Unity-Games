@@ -370,7 +370,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetNumber: 2048
-  Delay: 1.01
+  Delay: 0
   gameStatus: 0
   MainPanel: {fileID: 382392404}
   GameOverPanel: {fileID: 1218158881}
