@@ -84,7 +84,7 @@ public class InputManager : MonoBehaviour
     private InputPhase GetInputPhase()
     {
         InputPhase inputPhase = new InputPhase { phase = TouchPhase.Canceled, position = new Vector3(), isValid = false };
-        #if UNITY_EDITOR
+        #if UNITY_EDITOR || UNITY_WEBGL
         if (Input.GetMouseButtonDown(0))
         {
             inputPhase.isValid = true;

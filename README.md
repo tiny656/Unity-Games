@@ -7,8 +7,8 @@ Some classical and interesting games for practice.
 * [x] high score store
 * [x] game over panel
 * [x] touch input
+* [x] animaiton
 * [ ] background music
-* [ ] animaiton
 * [ ] icon and platform(WebGL, Android) build, multiple browser support
 * [ ] auto deployment framework
 

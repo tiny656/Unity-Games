@@ -41,6 +41,21 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    public void Move(MoveDirection moveDirection)
+    {
+        Debug.Log(string.Format("Try Move {0}", moveDirection.ToString()));
+        this.isMoved = false;
+        this.gameStatus = GameStatus.WaitingForMoveToEnd;
+        if (this.Delay > 0f)
+        {
+            StartCoroutine(this.InternalMoveWithDelay(moveDirection));
+        }
+        else
+        {
+            this.InternalMove(moveDirection);
+        }
+    }
+
     private void CheckGameOver()
     {
         if (!this.CanMove() || this.IsReachGoal())
@@ -62,7 +77,9 @@ public class GameManager : MonoBehaviour
         if (this.emptyTiles.Count > 0)
         {
             int indexForNewNumber = Random.Range(0, emptyTiles.Count);
-            this.emptyTiles[indexForNewNumber].Number = 2;
+            int r = Random.Range(0, 10);
+            this.emptyTiles[indexForNewNumber].Number = r == 0 ? 4 : 2;
+            this.emptyTiles[indexForNewNumber].PlayAppearAnimation();
             this.emptyTiles.RemoveAt(indexForNewNumber);
         }
     }
@@ -91,20 +108,7 @@ public class GameManager : MonoBehaviour
         }
         return false;
     }
-    public void Move(MoveDirection moveDirection)
-    {
-        Debug.Log(string.Format("Try Move {0}", moveDirection.ToString()));
-        this.isMoved = false;
-        this.gameStatus = GameStatus.WaitingForMoveToEnd;
-        if (this.Delay > 0f)
-        {
-            StartCoroutine(this.InternalMoveWithDelay(moveDirection));
-        }
-        else
-        {
-            this.InternalMove(moveDirection);
-        }
-    }
+    
 
     private void InternalMove(MoveDirection moveDirection)
     {
@@ -118,12 +122,7 @@ public class GameManager : MonoBehaviour
                 tileInLine = GetTilesFromOneRow(i, moveDirection);
             this.UpdateTileOnOneLine(i, tileInLine);
         }
-        if (this.isMoved)
-        {
-            this.TryGenerateNewTile();
-            this.TryGenerateNewTile();
-        }
-        this.CheckGameOver();
+        
     }
 
     private IEnumerator InternalMoveWithDelay(MoveDirection moveDirection)
@@ -142,7 +141,7 @@ public class GameManager : MonoBehaviour
         }
         while (this.lineCompleted.Any(x => x == false))
         {
-            Debug.Log("wait for coroutine");
+            // Debug.Log("wait for coroutine");
             yield return null;
         }
         if (this.isMoved)
@@ -151,6 +150,26 @@ public class GameManager : MonoBehaviour
             this.TryGenerateNewTile();
         }
         this.CheckGameOver();
+        StopAllCoroutines();
+    }
+    
+    private void MergeTile(Tile curTile, Tile nextTile)
+    {
+        curTile.PlayMergeAnimation();
+        ScoreManager.GetInstance().Score += curTile.Number;
+        curTile.Number *= 2;
+        nextTile.Number = 0;
+        this.emptyTiles.Add(nextTile);
+        this.isMoved = true;
+    }
+
+    private void MoveTile(Tile curTile, Tile nextTile)
+    {
+        curTile.Number = nextTile.Number;
+        nextTile.Number = 0;
+        this.emptyTiles.Remove(curTile);
+        this.emptyTiles.Add(nextTile);
+        this.isMoved = true;
     }
 
     private void UpdateTileOnOneLine(int lineIndex, Tile[] tileInLine)
@@ -164,21 +183,13 @@ public class GameManager : MonoBehaviour
             Tile curTile = tileInLine[i];
             Tile nextTile = tileInLine[nextNotZeroPos];
             if (curTile.Number == 0)
-            {// Move tile
-                curTile.Number = nextTile.Number;
-                nextTile.Number = 0;
+            {
                 i -= 1;
-                this.emptyTiles.Remove(curTile);
-                this.emptyTiles.Add(nextTile);
-                this.isMoved = true;
+                this.MoveTile(curTile, nextTile);
             }
             else if (curTile.Number == nextTile.Number)
-            {// Merge tile
-                ScoreManager.GetInstance().Score += curTile.Number;
-                curTile.Number *= 2;
-                nextTile.Number = 0;
-                this.emptyTiles.Add(nextTile);
-                this.isMoved = true;
+            {
+                this.MergeTile(curTile, nextTile);
             }
         }
     }
@@ -196,11 +207,7 @@ public class GameManager : MonoBehaviour
                 nextTile = tileInLine[j + 1];
                 if (curTile.Number == 0 && nextTile.Number != 0)
                 {
-                    curTile.Number = nextTile.Number;
-                    nextTile.Number = 0;
-                    this.emptyTiles.Add(nextTile);
-                    this.emptyTiles.Remove(curTile);
-                    this.isMoved = true;
+                    this.MoveTile(curTile, nextTile);
                     yield return new WaitForSeconds(this.Delay);
                 }
             }
@@ -212,12 +219,8 @@ public class GameManager : MonoBehaviour
             nextTile = tileInLine[i + 1];
             if (curTile.Number != 0 && curTile.Number == nextTile.Number)
             {
-                ScoreManager.GetInstance().Score += curTile.Number;
-                curTile.Number *= 2;
-                nextTile.Number = 0;
-                this.emptyTiles.Add(nextTile);
                 pos = i + 1;
-                this.isMoved = true;
+                this.MergeTile(curTile, nextTile);
                 yield return new WaitForSeconds(this.Delay);
                 break;
             }
@@ -228,11 +231,7 @@ public class GameManager : MonoBehaviour
             nextTile = tileInLine[i + 1];
             if (curTile.Number == 0 && nextTile.Number != 0)
             {
-                curTile.Number = nextTile.Number;
-                nextTile.Number = 0;
-                this.emptyTiles.Add(nextTile);
-                this.emptyTiles.Remove(curTile);
-                this.isMoved = true;
+                this.MoveTile(curTile, nextTile);
                 yield return new WaitForSeconds(this.Delay);
             }
         }

@@ -30,12 +30,27 @@ public class Tile : MonoBehaviour
     private int number;
     private Text tileText;
     private Image tileImage;
+    private Animator anim;
 
     void Awake()
     {
+        this.anim = GetComponent<Animator>();
         this.tileText = GetComponentInChildren<Text>();
         this.tileImage = transform.Find("NumberedCell").GetComponent<Image>();
     }
+    
+    public void PlayAppearAnimation()
+    {
+        Debug.Log("Play appear animation");
+        this.anim.SetTrigger("Appear");
+    }
+
+    public void PlayMergeAnimation()
+    {
+        Debug.Log("Play merge animation");
+        this.anim.SetTrigger("Merge");
+    }
+
 
     private void ApplyStyleFromHolder(int number)
     {
